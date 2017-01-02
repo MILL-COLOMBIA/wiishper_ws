@@ -7,6 +7,9 @@ import java.sql.ResultSetMetaData;
 import java.sql.SQLException;
 import java.sql.Statement;
 import java.util.HashMap;
+import java.util.Map;
+
+import Utils.WSConstants;
 import pruebaConexion.DbConexion;
 
 public class FriendsModelDAO 
@@ -70,12 +73,12 @@ public class FriendsModelDAO
 		}
 		return friends;
 	}
-	public static String create( HashMap<String, Object> data)
+	public static int create(Map<String, Object> data)
 	{
 		Integer friender = (Integer) data.get("friender");
 		Integer friendee = (Integer) data.get("friendee");
 		DbConexion conex = new DbConexion();
-		String mensaje = "";
+		Integer mensaje = 0;
 		try 
 		{
 			PreparedStatement preparedStatement = conex.getConnection().prepareStatement("INSERT INTO friends (friender, befriend_date, friendee ) VALUES (?, now(), ?) ");
@@ -85,11 +88,11 @@ public class FriendsModelDAO
 			ResultSet res = preparedStatement.executeQuery();
 			if(res.first())
 			{
-				mensaje = "STATE_CREATE_SUCCESS";
+				mensaje = WSConstants.STATE_CREATE_SUCCESS;
 			}
 			else
 			{
-				mensaje = "STATE_CREATE_FAILED";
+				mensaje = WSConstants.STATE_CREATE_FAILED;
 			}	
 		}
 		catch (SQLException e) 
@@ -98,10 +101,10 @@ public class FriendsModelDAO
 		}
 		return mensaje;
 	}
-	public static String delete(Integer id, Integer friendee)
+	public static int delete(Integer id, Integer friendee)
 	{
 		DbConexion conex = new DbConexion();
-		String mensaje = "";
+		int mensaje = 0;
 		try 
 		{
 			PreparedStatement preparedStatement = conex.getConnection().prepareStatement("DELETE FROM friends WHERE friendee = ? AND friender = ?");
@@ -111,11 +114,11 @@ public class FriendsModelDAO
 			ResultSet res = preparedStatement.executeQuery();
 			if(res.rowDeleted())
 			{
-				mensaje = "STATE_DELETE_SUCCESS";
+				mensaje = WSConstants.STATE_DELETE_SUCCESS;
 			}
 			else
 			{
-				mensaje = "STATE_DELETE_FAILED";
+				mensaje = WSConstants.STATE_DELETE_FAILED;
 			}
 			res.close();
 			conex.desconectar();
@@ -156,7 +159,7 @@ public class FriendsModelDAO
 		}
 		return mensaje;
 	}
-	public static HashMap<String, Object> getFriends(Integer userID, Integer friendID) throws Exception
+	public static Map<String, Object> getFriends(Integer userID, Integer friendID) throws Exception
 	{
 		DbConexion conex = new DbConexion();
 		HashMap<String, Object> getfriends = new HashMap<>();

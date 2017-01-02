@@ -1,9 +1,10 @@
 package ModelDAO;
 
-import java.util.ArrayList;
 import java.util.HashMap;
+import java.util.Map;
 
 import Encrypted.Sha;
+import Utils.WSConstants;
 
 import java.security.NoSuchAlgorithmException;
 import java.sql.Date;
@@ -13,13 +14,11 @@ import java.sql.ResultSet;
 import java.sql.ResultSetMetaData;
 import java.sql.SQLException;
 import java.sql.Statement;
-
-import ModelVO.UsersModelVO;
 import pruebaConexion.DbConexion;
 
 public class UsersModelDAO  
 {
-	public static HashMap<String, Object> listAll() throws Exception
+	public static Map<String, Object> listAll() throws Exception
 	{
 		DbConexion conex = new DbConexion();
 		HashMap<String, Object> users = new HashMap<>();
@@ -54,9 +53,9 @@ public class UsersModelDAO
 		return users;
 		
 	}
-	public static HashMap<String, Object> userId (Integer id) throws Exception
+	public static Map<String, Object> userId (Integer id) throws Exception
 	{
-		HashMap<String, Object> user = new HashMap<>();
+		Map<String, Object> user = new HashMap<>();
 		DbConexion conex = new DbConexion();
 		ResultSet res = null;
 		try
@@ -133,20 +132,20 @@ public class UsersModelDAO
 		return user;
 		
 	}
-	public static String create(HashMap<String, Object> userdata)
+	public static int create(Map<String, Object> data)
 	{
-		String username = (String) userdata.get("username");
-		String password = (String) userdata.get("password");
+		String username = (String) data.get("username");
+		String password = (String) data.get("password");
 		String encryptedpassword = encryptedPassword(password);
-		String email = (String) userdata.get("email");
-		String name = (String) userdata.get("name");
-		String surname = (String) userdata.get("surname");
-		Date birthdate = (Date) userdata.get("birthdate");
+		String email = (String) data.get("email");
+		String name = (String) data.get("name");
+		String surname = (String) data.get("surname");
+		Date birthdate = (Date) data.get("birthdate");
 		
 		String apikey = generateApikey();
 		DbConexion conex = new DbConexion();
 		ResultSet res = null;
-		String mensaje = "";
+		int mensaje = 0;
 		try 
 		{
 			PreparedStatement preparedStatement = conex.getConnection().prepareStatement("INSERT INTO users username, name, surname, email, password, bithdate, apikey, entrydate VALUES (?,?,?,?,?,?,?,?)");
@@ -160,11 +159,11 @@ public class UsersModelDAO
 			res = preparedStatement.executeQuery();
 			if(res.first())
 			{	
-				mensaje = "STATE_CREATE_SUCCES";
+				mensaje = WSConstants.STATE_CREATE_SUCCESS;
 			}
 			else
 			{
-				mensaje = "STATE_CREATE_FAILED";
+				mensaje = WSConstants.STATE_CREATE_FAILED;
 			}	
 			
 		}
@@ -231,7 +230,7 @@ public class UsersModelDAO
 		conex.desconectar();
 		return mensaje;
 	}
-	public static String update(Integer id, HashMap<String, Object> data) throws SQLException
+	public static int update(Integer id, Map<String, Object> data) throws SQLException
 	{
 		String profilepic = (String) data.get("profilepic");
 		String apikey = (String) data.get("apikey");
@@ -243,7 +242,7 @@ public class UsersModelDAO
 		Date birthdate = (Date)data.get("birthdate");
 		String email = (String)data.get("email");
 		String name = (String)data.get("name");
-		String mensaje = "";
+		int mensaje = 0;
 		ResultSet res = null;
 		DbConexion conex = new DbConexion();
 		try {
@@ -262,11 +261,11 @@ public class UsersModelDAO
 			res = preparedStatement.getResultSet();
 			if(res.first())
 			{
-				mensaje = "STATE_UPDATE_SUCCESS";
+				mensaje = WSConstants.STATE_UPDATE_SUCCESS;
 			}
 			else
 			{
-				mensaje = "STATE_UPDATE_FAILED";
+				mensaje = WSConstants.STATE_UPDATE_FAILED;
 			}	
 			
 		}
