@@ -13,19 +13,23 @@ import pruebaConexion.DbConexion;
 
 public class TastesModelDAO 
 {
-	public static ArrayList<TastesModelVO> listAll() throws Exception
+	public static HashMap<String, Object> listAll() throws Exception
 	{
 		DbConexion conex = new DbConexion();
-		ArrayList<TastesModelVO> arreglo = new ArrayList<>();
+		HashMap<String, Object> tastes = new HashMap<>();
 		try 
 		{
 			Statement statement = conex.getConnection().createStatement();
 			ResultSet res = statement.executeQuery("SELECT * FROM tastes");
 			if(res.first())
 			{
-				while(res.next())
+				res = statement.getResultSet();
+				ResultSetMetaData meta = res.getMetaData();
+				for(int i =0;i<=meta.getColumnCount();i++)
 				{
-					arreglo.add((TastesModelVO) res);
+					String key = meta.getColumnName(i);
+		            String value = res.getString(key);
+		            tastes.put(key, value);
 				}	
 			}
 			else
@@ -38,7 +42,7 @@ public class TastesModelDAO
 		{
 			e.printStackTrace();
 		}
-		return arreglo;
+		return tastes;
 	}
 	public static HashMap<String, Object> get(Integer id) throws Exception
 	{
@@ -107,10 +111,10 @@ public class TastesModelDAO
 		}
 		return arreglo;
 	}
-	public static ArrayList<TastesModelVO> getByPreferences(Integer iduser, Integer liked) throws Exception
+	public static HashMap<String, Object> getByPreferences(Integer iduser, Integer liked) throws Exception
 	{
 		DbConexion conex = new DbConexion();
-		ArrayList<TastesModelVO> tastes = new ArrayList<>();
+		HashMap<String, Object> getReference = new HashMap<>();
 		try 
 		{
 			PreparedStatement preparedStatement = conex.getConnection().prepareStatement("SELECT * FROM tastes WHERE liked = ? AND idusers =?");
@@ -119,9 +123,13 @@ public class TastesModelDAO
 			if(preparedStatement.execute())
 			{
 				ResultSet res = preparedStatement.executeQuery();
-				for(int i =0;i<res.getRow();i++)
+				ResultSetMetaData resultMeta = res.getMetaData();
+				
+				for(int i = 0; i < resultMeta.getColumnCount();i++)
 				{
-					tastes.add((TastesModelVO) res);
+					String key = resultMeta.getColumnName(i);
+		            String value = res.getString(key);
+		            getReference.put(key, value);
 				}	
 			}
 			else
@@ -133,7 +141,7 @@ public class TastesModelDAO
 		{
 			e.printStackTrace();
 		}
-		return tastes;
+		return getReference;
 	}
 	public static String create(HashMap<String, Object> data)
 	{

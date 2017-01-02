@@ -1,9 +1,6 @@
 package ModelDAO;
 
-import java.util.ArrayList;
 import java.util.HashMap;
-
-import ModelVO.TypesModelVO;
 
 import java.sql.PreparedStatement;
 import java.sql.ResultSet;
@@ -15,10 +12,10 @@ import pruebaConexion.DbConexion;
 
 public class TypesModelDAO 
 {
-	public static ArrayList<TypesModelVO> listAll() throws Exception
+	public static HashMap<String, Object> listAll() throws Exception
 	{
 		DbConexion conex = new DbConexion();
-		ArrayList<TypesModelVO> arrayTypes = new ArrayList<>();
+		HashMap<String, Object> types = new HashMap<>();
 		Statement statement;
 		try 
 		{
@@ -26,10 +23,14 @@ public class TypesModelDAO
 			ResultSet res =statement.executeQuery("SELECT * FROM types");
 			if(res.first())
 			{
-				while(res.next())
+				res = statement.getResultSet();
+				ResultSetMetaData meta = res.getMetaData();
+				for(int i =0;i<=meta.getColumnCount();i++)
 				{
-					arrayTypes.add((TypesModelVO)res);
-				}
+					String key = meta.getColumnName(i);
+		            String value = res.getString(key);
+		            types.put(key, value);
+				}	
 			}
 			else
 			{
@@ -44,7 +45,7 @@ public class TypesModelDAO
 		{
 			e.printStackTrace();
 		}
-		return arrayTypes;	
+		return types;	
 	}
 	public static HashMap<String, Object> get(Integer id) throws Exception
 	{

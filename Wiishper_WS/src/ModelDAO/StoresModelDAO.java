@@ -13,19 +13,24 @@ import pruebaConexion.DbConexion;
 
 public class StoresModelDAO 
 {
-	public ArrayList<StoresModelVO> listAll() throws Exception
+	public HashMap<String, Object> listAll() throws Exception
 	{
 		DbConexion conex = new DbConexion();
-		ArrayList<StoresModelVO> stores = new ArrayList<>();
+		HashMap<String, Object> stores = new HashMap<>();
 		try 
 		{
 			Statement statement = conex.getConnection().createStatement();
 			ResultSet res = statement.executeQuery("SELECT * FROM stores");
 			if(res.first())
 			{
-				while(res.next())
+				res = statement.getResultSet();
+				ResultSetMetaData meta = res.getMetaData();
+				
+				for(int i = 0; i < meta.getColumnCount();i++)
 				{
-					stores.add((StoresModelVO) res);
+					String key = meta.getColumnName(i);
+		            String value = res.getString(key);
+		            stores.put(key, value);
 				}	
 			}
 			else

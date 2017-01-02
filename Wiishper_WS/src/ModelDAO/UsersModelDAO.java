@@ -19,20 +19,24 @@ import pruebaConexion.DbConexion;
 
 public class UsersModelDAO  
 {
-	public static ArrayList<UsersModelVO> listAll() throws Exception
+	public static HashMap<String, Object> listAll() throws Exception
 	{
 		DbConexion conex = new DbConexion();
-		ArrayList<UsersModelVO> array = new ArrayList<>();
+		HashMap<String, Object> users = new HashMap<>();
 		try
 		{
 			Statement statement = conex.getConnection().createStatement();
 			ResultSet res = statement.executeQuery("SELECT * FROM users");
 			if(res.first())
 			{
-				while(res.next())
+				res = statement.getResultSet();
+				ResultSetMetaData meta = res.getMetaData();
+				for(int i =0;i<=meta.getColumnCount();i++)
 				{
-					array.add((UsersModelVO) res);
-				}
+					String key = meta.getColumnName(i);
+		            String value = res.getString(key);
+		            users.put(key, value);
+				}	
 			}
 			else
 			{
@@ -47,7 +51,7 @@ public class UsersModelDAO
 		{
 			 throw new Exception(e.getLocalizedMessage());
 		}
-		return array;
+		return users;
 		
 	}
 	public static HashMap<String, Object> userId (Integer id) throws Exception
